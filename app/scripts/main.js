@@ -26,7 +26,8 @@
 
   BLM.States = {
     sidebar: false,
-    usedAlt: false
+    usedAlt: false,
+    usedMouse: false
   };
 
   /**
@@ -138,12 +139,12 @@
       }
 
       // If Sidebar is not visible and Alt Key is pressed, show Sidebar
-      if((keyCode === 18) && !BLM.States.sidebar && !viewChanged) {
+      if((keyCode === 18) && !BLM.States.sidebar && !viewChanged && !BLM.States.usedMouse) {
         BLM.$Events.trigger('sidebar:show');
         BLM.States.usedAlt = true;
       }
       // If Sidebar is visible and Alt Key is pressed, hide Sidebar
-      else if((keyCode === 18) && BLM.States.sidebar && !viewChanged) {
+      else if((keyCode === 18) && BLM.States.sidebar && !viewChanged && !BLM.States.usedMouse) {
         BLM.$Events.trigger('sidebar:hide');
         BLM.States.usedAlt = false;
       }
@@ -172,10 +173,17 @@
     });
 
     // Observe Mouse
+    var mouseTimeout;
     $(document).on('mousemove', function(e) {
       // If Sidebar Not Visible and Mouse near Edge Show Sidebar
       if(!BLM.States.sidebar && (e.clientX < 40) && !BLM.States.usedAlt) {
-        BLM.$Events.trigger('sidebar:show');
+        if(mouseTimeout) {
+          clearTimeout(mouseTimeout);
+        }
+        mouseTimeout = setTimeout(function() {
+          BLM.$Events.trigger('sidebar:show');
+          BLM.States.usedMouse = true;
+        }, 1000);
       }
     });
 
@@ -183,6 +191,7 @@
     BLM.$.Sidebar.on('mouseleave', function() {
       if(BLM.States.sidebar && !BLM.States.usedAlt) {
         BLM.$Events.trigger('sidebar:hide');
+        BLM.States.usedMouse = false;
       }
     });
   };
