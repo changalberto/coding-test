@@ -53,6 +53,43 @@
     // Generate 150 Items
     BLM.$.List.html(generateItems(150));
 
+    BLM.$.List.items = BLM.$.List.find('li');
+
+    // Store Initial Flex Direction Tween position
+    var items = [];
+    BLM.$.List.items.each(function(i, el) {
+      TweenLite.set(el, {x: 0});
+
+      /*eslint no-underscore-dangle: ["error", { "allow": ["_gsTransform"] }]*/
+      items.push({
+        transform: el._gsTransform,
+        x: el.offsetLeft,
+        y: el.offsetTop,
+        node: el
+      });
+    });
+
+
+    function tweenFlexDirection() {
+      for(var i = 0; i < items.length; i++) {
+        var item = items[i],
+          lastX = item.x,
+          lastY = item.y;
+
+        item.x = item.node.offsetLeft;
+        item.y = item.node.offsetTop;
+
+        if(lastX === item.x && lastY === item.y) {
+          continue;
+        }
+
+        var x = item.transform.x + lastX - item.x;
+        var y = item.transform.y + lastY - item.y;
+
+        TweenLite.fromTo(item.node, 0.5, {x: x, y: y }, {x: 0, y: 0, ease: Power1.easeInOut});
+      }
+    }
+
     /**
      * Set List Views
      * @method setView
@@ -78,6 +115,8 @@
           BLM.$.List.removeClass('grid-view');
           BLM.$.Sidebar.find('[data-view="list"]').addClass('active');
       }
+
+      tweenFlexDirection();
     }
 
     /**
