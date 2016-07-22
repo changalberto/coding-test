@@ -58,7 +58,7 @@
     // Store Initial Flex Direction Tween position
     var items = [];
     BLM.$.List.items.each(function(i, el) {
-      TweenLite.set(el, {x: 0});
+      TweenLite.set(el, {x: 0, y: 0});
 
       /*eslint no-underscore-dangle: ["error", { "allow": ["_gsTransform"] }]*/
       items.push({
